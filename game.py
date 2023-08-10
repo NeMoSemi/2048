@@ -58,20 +58,134 @@ class GameCycle(pygame.sprite.Sprite):
         self.mode = mode
         self.box = []
         for i in range(self.mode):
-            self.box.append([0] * self.mode)
-        print(self.box)
-        self.box[random.randint(0, self.mode - 1)][random.randint(0, self.mode - 1)] = get_random_number() # ставим случайное число в случайное место
+            vr_sp = []
+            for j in range(self.mode):
+                vr_sp.append([0, True])
+            self.box.append(vr_sp)
+        #self.box[0] = [[2, True], [2, True], [2, True], [2, True]]
+        #self.box[2] = [[2, True], [2, True], [2, True], [2, True]]
+        #self.box[3] = [[4, True], [4, True], [4, True], [4, True]]
+        #print(self.box)
+        self.box[random.randint(0, self.mode - 1)][random.randint(0, self.mode - 1)][0] = get_random_number() # ставим случайное число в случайное место
         self.x_bottom = self.gamefon_class.game_x_bottom()
         self.y_bottom = self.gamefon_class.game_y_bottom()
 
     def update(self, *args):
-        for y in self.box:
-            for x in y:
-                if x in self.digits:
-                    y_pos = self.box.index(y) + 1
-                    x_pos = y.index(x) + 1
-                    screen.blit(self.digits[x], (self.x_bottom + 15 * x_pos + 100 * (x_pos - 1),
-                                                 self.y_bottom + 15 * y_pos + 100 * (y_pos - 1)))
+        #print(args, args[0], args[0].type)
+        sames_sp = True
+        keys = pygame.key.get_pressed()
+        is_pressed = False
+        if args and args[0].type == pygame.KEYDOWN and keys[pygame.K_w]:
+            is_pressed = True
+            steps = 0
+            give_for_draw = []
+            for y_num in range(self.mode - 1):
+                #print(y_num)
+                for x_num in range(self.mode):
+                    index = y_num + 1 # текущая строка
+                    steps = 0
+                    verh_kl = y_num
+                    while index != 0:
+                        if self.box[verh_kl][x_num][0] == 0 and self.box[index][x_num][0] != 0:  # верхняя клетка y_num
+                            self.box[verh_kl][x_num] = self.box[index][x_num]  # возможно надо будет менять только число
+                            self.box[index][x_num] = [0, True]
+                            sames_sp = False
+                        elif self.box[verh_kl][x_num] == self.box[index][x_num] and \
+                                self.box[verh_kl][x_num][1] is True and self.box[index][x_num][0] != 0:
+                            self.box[verh_kl][x_num] = [self.box[index][x_num][0] * 2, False]
+                            self.box[index][x_num] = [0, True]
+                            sames_sp = False
+                        index -= 1
+                        verh_kl -= 1
+
+        elif args and args[0].type == pygame.KEYDOWN and keys[pygame.K_s]:
+            is_pressed = True
+            steps = 0
+            give_for_draw = []
+            for y_num in range(self.mode - 2, -1, -1): # ходим обратно от mode - 2 до 0 включительно
+                for x_num in range(self.mode):
+                    index = y_num # текущая строка
+                    steps = 0
+                    verh_kl = y_num + 1 # нижняя строка
+                    while index != self.mode - 1:
+                        if self.box[verh_kl][x_num][0] == 0 and self.box[index][x_num][0] != 0:  # верхняя клетка y_num
+                            self.box[verh_kl][x_num] = self.box[index][x_num]  # возможно надо будет менять только число
+                            self.box[index][x_num] = [0, True]
+                            sames_sp = False
+                        elif self.box[verh_kl][x_num] == self.box[index][x_num] and \
+                                self.box[verh_kl][x_num][1] is True and self.box[index][x_num][0] != 0:
+                            self.box[verh_kl][x_num] = [self.box[index][x_num][0] * 2, False]
+                            self.box[index][x_num] = [0, True]
+                            sames_sp = False
+                        index += 1
+                        verh_kl += 1
+
+        elif args and args[0].type == pygame.KEYDOWN and keys[pygame.K_a]:
+            is_pressed = True
+            steps = 0
+            give_for_draw = []
+            for y_num in range(self.mode):
+                #print(y_num)
+                for x_num in range(self.mode - 1):
+                    index = x_num + 1 # текущая строка
+                    steps = 0
+                    verh_kl = x_num
+                    while index != 0:
+                        if self.box[y_num][verh_kl][0] == 0 and self.box[y_num][index][0] != 0:  # верхняя клетка y_num
+                            self.box[y_num][verh_kl] = self.box[y_num][index] # возможно надо будет менять только число
+                            self.box[y_num][index] = [0, True]
+                            sames_sp = False
+                        elif self.box[y_num][verh_kl] == self.box[y_num][index] and \
+                                self.box[y_num][verh_kl][1] is True and self.box[y_num][index][0] != 0:
+                            self.box[y_num][verh_kl] = [self.box[y_num][index][0] * 2, False]
+                            self.box[y_num][index] = [0, True]
+                            sames_sp = False
+                        index -= 1
+                        verh_kl -= 1
+
+        elif args and args[0].type == pygame.KEYDOWN and keys[pygame.K_d]:
+            is_pressed = True
+            steps = 0
+            give_for_draw = []
+            for y_num in range(self.mode):  # ходим обратно от mode - 2 до 0 включительно
+                for x_num in range(self.mode - 2, -1, -1):
+                    index = x_num  # текущая строка
+                    steps = 0
+                    verh_kl = x_num + 1  # нижняя строка
+                    while index != self.mode - 1:
+                        if self.box[y_num][verh_kl][0] == 0 and self.box[y_num][index][0] != 0:  # верхняя клетка y_num
+                            self.box[y_num][verh_kl] = self.box[y_num][index]  # возможно надо будет менять только число
+                            self.box[y_num][index] = [0, True]
+                            sames_sp = False
+                        elif self.box[y_num][verh_kl] == self.box[y_num][index] and \
+                                self.box[y_num][verh_kl][1] is True and self.box[y_num][index][0] != 0:
+                            self.box[y_num][verh_kl] = [self.box[y_num][index][0] * 2, False]
+                            self.box[y_num][index] = [0, True]
+                            sames_sp = False
+                        index += 1
+                        verh_kl += 1
+
+        if is_pressed and not sames_sp:
+            can_stick =[]
+            for y in range(self.mode):
+                for x in range(self.mode):
+                    if self.box[y][x][0] == 0:
+                        can_stick.append([y, x])
+            if len(can_stick) != 0:
+                pos = random.choice(can_stick)
+                self.box[pos[0]][pos[1]][0] = get_random_number()
+
+        # отрисовка в конце + все клетки True
+        for y in range(self.mode):
+            for x in range(self.mode):
+                self.box[y][x][1] = True
+                #print(x[0])
+                if self.box[y][x][0] in self.digits:
+                    #print(self.digits[x[0]])
+                    y_pos = y + 1
+                    x_pos = x + 1
+                    screen.blit(self.digits[self.box[y][x][0]], (self.x_bottom + 15 * x_pos + 100 * (x_pos - 1),
+                                                                 self.y_bottom + 15 * y_pos + 100 * (y_pos - 1)))
 
 
 GameGroup = pygame.sprite.Group()

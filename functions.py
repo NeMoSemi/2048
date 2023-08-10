@@ -22,3 +22,8 @@ def load_image(name, colorkey=None):
 def get_random_number():
     chanse = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4]
     return random.choice(chanse)
+
+
+def draw_digit(args):
+    pass
+
